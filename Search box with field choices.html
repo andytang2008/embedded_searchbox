@@ -1,0 +1,52 @@
+<!--
+Andy Tang: some modification are made so that this embedded search box could search fields, such as Title, keyword, Author, Subject, and Call number.
+The original title of "Creating a Search Box With Deep Links to the New UI" is located at https://knowledge.exlibrisgroup.com/Primo/Product_Documentation/New_Primo_User_Interface/New_UI_Customization_-_Best_Practices#Creating_a_Search_Box_With_Deep_Links_to_the_New_UI
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Script that converts the query string into valid parameter -->
+<script type="text/javascript">
+function searchPrimo() {
+//document.getElementById("primoQuery").value = "any,contains," + document.getElementById("primoQueryTemp").value.replace(/[,]/g, " ");  Backup by Andy Tang at 12/12/2017
+document.getElementById("primoQuery").value = document.getElementById("andyselect").value.replace(/[,]/g, " ")+",contains," + document.getElementById("primoQueryTemp").value.replace(/[,]/g, " ");  //modified by Andy Tang
+document.forms["searchForm"].submit();
+}
+</script>
+</head>
+<body>
+<form id="simple" name="searchForm" method="get" target="_self" action="http://<host_name>/primo-explore/search" enctype="application/x-www-form-urlencoded; charset=utf-8" onsubmit="searchPrimo()">
+
+<!--Customized and added select box by Andy Tang at 12/12/2017-->
+    <!--<select name="search_field" id="andyselect" style="vertical-align:text-top; font-size:93%;" title="Search within" size="7">-->
+	<select name="search_field" id="andyselect"  title="Search within" >
+		<option selected="selected" value="any">Everything</option>
+		<option value="title">Title</option>
+		<option value="creator">Author/Creator</option>
+		<option value="sub">Subject</option>
+		<option value="lsr01">Call number</option>
+    </select>
+
+
+<!-- Customizable Parameters -->
+<input type="hidden" name="institution" value="01UNLV_LAW">
+<input type="hidden" name="vid" value="UNLV_LAW">
+<input type="hidden" name="tab" value="default_tab">
+<input type="hidden" name="search_scope" value="EVERYTHING">
+<input type="hidden" name="mode" value="Basic">
+<!-- Fixed parameters -->
+<input type="hidden" name="displayMode" value="full">
+<input type="hidden" name="bulkSize" value="10">
+<input type="hidden" name="highlight" value="true">
+<input type="hidden" name="dum" value="true">
+<input type="hidden" name="query" id="primoQuery">
+<input type="hidden" name="displayField" value="all">
+<!-- Enable this if "Expand My Results" is enabled by default in Views Wizard -->
+<input type="hidden" name="pcAvailabiltyMode" value="true">
+<input type="text" id="primoQueryTemp" value="" size="35">
+<!-- Search Button -->
+<input id="go" title="Search" onclick="searchPrimo()" type="button" value="Search" alt="Search" style="height: 22px; font-size: 12px; font-weight: bold; background: #DE6E17; color: #ffffff; border: 1px solid;">
+
+</form>
+</body>
+</html>
