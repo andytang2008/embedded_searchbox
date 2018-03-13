@@ -1,0 +1,268 @@
+<!--
+Andy Tang: Some modification are made so that this embedded search box could search fields, such as Title, keyword, Author, Subject, and Call number.
+The original title of "Creating a Search Box With Deep Links to the New UI" is located at https://knowledge.exlibrisgroup.com/Primo/Product_Documentation/New_Primo_User_Interface/New_UI_Customization_-_Best_Practices#Creating_a_Search_Box_With_Deep_Links_to_the_New_UI
+
+This code is modified by Andy to have the capability to search title, author, subject, and call number.
+-->
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Script that converts the query string into valid parameter -->
+<script type="text/javascript">
+
+//window.onload=myFunction(); If we run myFunction when window.onload, the page element still in the half road, the myFunction will fail to getElementById, We have to put them into body onload
+
+function myFunction() {
+		document.getElementById("firstButton").click(); // Click on the checkbox
+}
+
+function openCity(evt, cityName) {
+		var i, tabcontent, tablinks;
+		tabcontent = document.getElementsByClassName("tabcontent");
+		for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		}
+		tablinks = document.getElementsByClassName("tablinks");
+		for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		document.getElementById(cityName).style.display = "block";
+		evt.currentTarget.className += " active";
+
+		if(cityName=="ALL")
+		{
+		document.getElementById("type0").checked = true;
+		}
+		
+		if(cityName=="BOOKS")
+		{
+		document.getElementById("type1").checked = true;
+		}
+		
+		if(cityName=="JOURNALS")
+		{
+		document.getElementById("type2").checked = true;
+		}
+}
+
+
+
+function searchPrimo() {
+		//document.getElementById("primoQuery").value = "any,contains," + document.getElementById("primoQueryTemp").value.replace(/[,]/g, " ");  Backup by Andy Tang at 12/12/2017
+		//document.getElementById("primoQuery").value = document.getElementById("andyselect").value.replace(/[,]/g, " ")+",contains," + document.getElementById("primoQueryTemp").value.replace(/[,]/g, " ");  //modified by Andy Tang
+		var typenumber = document.querySelector('input[name = "type"]:checked').value;
+		if (typenumber!=="all")
+		{
+		document.getElementById("pfilter").value="pfilter,exact,"+typenumber;
+		}
+		document.getElementById("primoQuery").value = document.getElementById("andyselect").value.replace(/[,]/g, " ")+",contains," + document.getElementById("primoQueryTemp").value.replace(/[,]/g, " ");  //modified by Andy Tang
+		document.forms["searchForm"].submit();
+}
+
+</script>
+
+
+<style>
+	body {font-family: Arial;}
+
+	/* Style the tab */
+	.tab {
+		overflow: hidden;
+		border: 1px solid #ccc;
+		background-color: #f1f1f1;
+	}
+
+	/* Style the buttons inside the tab */
+	.tab button {
+		background-color: inherit;
+		float: left;
+		border: none;
+		outline: none;
+		cursor: pointer;
+		padding: 14px 16px;
+		transition: 0.3s;
+		font-size: 17px;
+	}
+
+	/* Change background color of buttons on hover */
+	.tab button:hover {
+		background-color: #ddd;
+	}
+
+	/* Create an active/current tablink class */
+	.tab button.active {
+		background-color: #ddd;
+	}
+
+	/* Style the tab content */
+	.tabcontent {
+		display: none;
+		padding: 6px 12px;
+		border: 1px solid #ccc;
+		border-top: none;
+	}
+</style>
+
+
+</head>
+<body onload="myFunction();">
+
+
+<p>Click the tab:</p>
+<!--radio button customized by Andy -->
+		  <input id="type0" type="radio" name="type" value="all" style="display:none" checked >
+		  <input id="type1" type="radio" name="type" value="books" style="display:none">
+		  <input id="type2" type="radio" name="type" value="journals" style="display:none"><br>
+
+
+<div class="tab">
+	  <button class="tablinks" id="firstButton" onclick="openCity(event, 'ALL')">ALL</button>
+	  <button class="tablinks" onclick="openCity(event, 'BOOKS')">BOOKS</button>
+	  <button class="tablinks" onclick="openCity(event, 'JOURNALS')">JOURNALS</button>
+</div>
+
+
+
+<div id="ALL" class="tabcontent" style="display: block;">
+  <h3>ALL</h3>
+  <!--Please put your institution's Primo search link into action part below-->
+		  <form id="simple" name="searchForm" method="get" target="_self" action="" enctype="application/x-www-form-urlencoded; charset=utf-8" onsubmit="searchPrimo()">
+
+			<!--Customization by Andy Tang at 12/12/2017-->
+				<!--<select name="search_field" id="andyselect" style="vertical-align:text-top; font-size:93%;" title="Search within" size="7">-->
+				<select name="search_field" id="andyselect"  title="Search within" >
+					<option selected="selected" value="any">Everything</option>
+					<option value="title">Title</option>
+					<option value="creator">Author/Creator</option>
+					<option value="sub">Subject</option>
+					<option value="lsr01">Call number</option>
+					<option value="issn">ISSN</option>
+					<option value="isbn">ISBN</option>
+					<option value="crsname">Course Name</option>
+				</select>
+				
+			<!-- Customizable Parameters -->
+			<input type="hidden" name="institution" value="01UNLV_LAW">
+			<input type="hidden" name="vid" value="UNLV_LAW">
+			<input type="hidden" name="tab" value="default_tab">
+			<input type="hidden" name="search_scope" value="EVERYTHING">
+			<!--<input type="hidden" name="mode" value="Basic">-->
+			<input type="hidden" name="mode" value="advanced">
+
+			<!-- Fixed parameters -->
+			<input type="hidden" name="displayMode" value="full">
+			<input type="hidden" name="bulkSize" value="10">
+			<input type="hidden" name="highlight" value="true">
+			<input type="hidden" name="dum" value="true">
+			<input type="hidden" name="query" id="primoQuery">
+			<input type="hidden" id="pfilter" name="pfilter" value="">
+
+			<input type="hidden" name="displayField" value="all">
+			<!-- Enable this if "Expand My Results" is enabled by default in Views Wizard -->
+			<input type="hidden" name="pcAvailabiltyMode" value="true">
+			<input type="text" id="primoQueryTemp" value="" size="35">
+			<!-- Search Button -->
+			<input id="go" title="Search" onclick="searchPrimo()" type="button" value="Search" alt="Search" style="height: 22px; font-size: 12px; font-weight: bold; background: #DE6E17; color: #ffffff; border: 1px solid;">
+
+			</form>
+  
+  
+  
+</div>
+
+<div id="BOOKS" class="tabcontent" style="display: none;">
+  <h3>Books</h3>
+    <!--Please put your institution's Primo search link into action part below-->
+  		  <form id="simple" name="searchForm" method="get" target="_self" action="" enctype="application/x-www-form-urlencoded; charset=utf-8" onsubmit="searchPrimo()">
+
+			<!--Customization by Andy Tang at 12/12/2017-->
+				<!--<select name="search_field" id="andyselect" style="vertical-align:text-top; font-size:93%;" title="Search within" size="7">-->
+				<select name="search_field" id="andyselect"  title="Search within" >
+					<option selected="selected" value="any">Everything</option>
+					<option value="title">Title</option>
+					<option value="creator">Author/Creator</option>
+					<option value="sub">Subject</option>
+					<option value="lsr01">Call number</option>
+					<option value="issn">ISSN</option>
+					<option value="isbn">ISBN</option>
+					<option value="crsname">Course Name</option>
+				</select>
+				
+			  
+			<!-- Customizable Parameters -->
+			<input type="hidden" name="institution" value="01UNLV_LAW">
+			<input type="hidden" name="vid" value="UNLV_LAW">
+			<input type="hidden" name="tab" value="default_tab">
+			<input type="hidden" name="search_scope" value="EVERYTHING">
+			<!--<input type="hidden" name="mode" value="Basic">-->
+			<input type="hidden" name="mode" value="advanced">
+
+			<!-- Fixed parameters -->
+			<input type="hidden" name="displayMode" value="full">
+			<input type="hidden" name="bulkSize" value="10">
+			<input type="hidden" name="highlight" value="true">
+			<input type="hidden" name="dum" value="true">
+			<input type="hidden" name="query" id="primoQuery">
+			<input type="hidden" id="pfilter" name="pfilter" value="">
+
+			<input type="hidden" name="displayField" value="all">
+			<!-- Enable this if "Expand My Results" is enabled by default in Views Wizard -->
+			<input type="hidden" name="pcAvailabiltyMode" value="true">
+			<input type="text" id="primoQueryTemp" value="" size="35">
+			<!-- Search Button -->
+			<input id="go" title="Search" onclick="searchPrimo()" type="button" value="Search" alt="Search" style="height: 22px; font-size: 12px; font-weight: bold; background: #DE6E17; color: #ffffff; border: 1px solid;">
+
+			</form>
+  
+</div>
+
+<div id="JOURNALS" class="tabcontent" style="display: none;">
+  <h3>Journals</h3>
+    <!--Please put your institution's Primo search link into action part below-->
+  		  <form id="simple" name="searchForm" method="get" target="_self" action="" enctype="application/x-www-form-urlencoded; charset=utf-8" onsubmit="searchPrimo()">
+			<!--Customization by Andy Tang at 12/12/2017-->
+				<!--<select name="search_field" id="andyselect" style="vertical-align:text-top; font-size:93%;" title="Search within" size="7">-->
+				<select name="search_field" id="andyselect"  title="Search within" >
+					<option selected="selected" value="any">Everything</option>
+					<option value="title">Title</option>
+					<option value="creator">Author/Creator</option>
+					<option value="sub">Subject</option>
+					<option value="lsr01">Call number</option>
+					<option value="issn">ISSN</option>
+					<option value="isbn">ISBN</option>
+					<option value="crsname">Course Name</option>
+				</select>
+				
+			<!-- Customizable Parameters -->
+			<input type="hidden" name="institution" value="01UNLV_LAW">
+			<input type="hidden" name="vid" value="UNLV_LAW">
+			<input type="hidden" name="tab" value="default_tab">
+			<input type="hidden" name="search_scope" value="EVERYTHING">
+			<!--<input type="hidden" name="mode" value="Basic">-->
+			<input type="hidden" name="mode" value="advanced">
+
+			<!-- Fixed parameters -->
+			<input type="hidden" name="displayMode" value="full">
+			<input type="hidden" name="bulkSize" value="10">
+			<input type="hidden" name="highlight" value="true">
+			<input type="hidden" name="dum" value="true">
+			<input type="hidden" name="query" id="primoQuery">
+			<input type="hidden" id="pfilter" name="pfilter" value="">
+
+			<input type="hidden" name="displayField" value="all">
+			<!-- Enable this if "Expand My Results" is enabled by default in Views Wizard -->
+			<input type="hidden" name="pcAvailabiltyMode" value="true">
+			<input type="text" id="primoQueryTemp" value="" size="35">
+			<!-- Search Button -->
+			<input id="go" title="Search" onclick="searchPrimo()" type="button" value="Search" alt="Search" style="height: 22px; font-size: 12px; font-weight: bold; background: #DE6E17; color: #ffffff; border: 1px solid;">
+
+			</form>
+
+</div>
+
+
+
+
+</body>
+</html>
